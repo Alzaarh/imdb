@@ -7,6 +7,9 @@ const {
 const {
     imdbReq,
 } = require('./helpers/apiReq');
+const {
+    updateDb,
+} = require('./helpers/firebase');
 
 let result;
 
@@ -64,10 +67,16 @@ inquirer.prompt([{
         }]);
     })
     .then(answers => {
+        result.title = answers.title;
         return imdbReq(answers.title);
     })
-    .then(result => {
-        console.log(result);
+    .then(searchResult => {
+        console.log(searchResult);
+        return updateDb(result.username, result.password, result.title);
+    })
+    .then(() => {
+        console.log('Done!');
+        process.exit(0);
     })
     .catch(err => {
         console.log(err);
